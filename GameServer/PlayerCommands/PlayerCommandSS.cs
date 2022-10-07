@@ -2,6 +2,7 @@
 using GameServer.Data;
 using GameServer.Networking;
 using GameServer.Templates;
+using Models.Enums;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace GameServer.PlayerCommands
 {
     public class PlayerCommandSS : PlayerCommand
     {
+        public override GameMasterLevel RequiredGMLevel => GameMasterLevel.Administrator;
+
         [Field(Position = 0)]
         public int Step;
 
@@ -113,7 +116,19 @@ namespace GameServer.PlayerCommands
                         SendPacket(29, 0, ms.ToArray());
                     }
                     break;
-
+                case 9:
+                    Player.ActiveConnection?.SendPacket(new CharacterExpChangesPacket
+                    {
+                        经验增加 = 0,
+                        今日增加 = 0,
+                        经验上限 = 10000000,
+                        DoubleExp = Player.DoubleExp,
+                        CurrentExp = Player.CurrentExp,
+                        升级所需 = Player.MaxExperience,
+                        GainAwakeningExp = 100,
+                        MaxAwakeningExp = Config.MaxAwakeningExp
+                    });
+                    break;
                 default:
                     break;
             }
